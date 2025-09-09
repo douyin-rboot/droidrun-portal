@@ -97,7 +97,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="16dp"
-                                android:text="Ready to fetch element data"
+                                android:text="准备好获取屏幕元素数据"
                                 android:textColor="@color/white"
                                 android:textSize="16sp" />
                         </LinearLayout>
@@ -138,7 +138,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Accessibility Service"
+                                android:text="无障碍服务 （红色圆点）已禁用"
                                 android:textColor="@color/white"
                                 android:textSize="14sp"
                                 android:textStyle="bold"
@@ -166,7 +166,7 @@
                                 android:id="@+id/accessibility_status_text"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="DISABLED"
+                                android:text="点击打开服务"
                                 android:textColor="@color/white"
                                 android:textSize="10sp"
                                 android:textStyle="bold"/>
@@ -226,7 +226,7 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Controls"
+                            android:text="控制"
                             android:textSize="20sp"
                             android:textStyle="bold"
                             android:textColor="@color/white" />
@@ -251,7 +251,7 @@
                                 android:layout_height="56dp"
                                 android:layout_marginEnd="8dp"
                                 android:layout_weight="1"
-                                android:text="Test Fetching Data"
+                                android:text="测试数据"
                                 android:textColor="@color/white"
                                 app:backgroundTint="@color/droidrun_primary"
                                 app:cornerRadius="12dp"
@@ -265,7 +265,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="12dp"
-                            android:text="Overlay"
+                            android:text="悬浮层"
                             android:textColor="@color/white"
                             android:textSize="18sp"
                             android:textStyle="bold" />
@@ -274,7 +274,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="8dp"
-                            android:text="Note: When using vision mode, it may be better to deactivate the Overlay"
+                            android:text="使用视觉模式时，最好停用悬浮层"
                             android:textColor="@color/droidrun_text_secondary"
                             android:textSize="14sp"
                             android:textStyle="italic" />
@@ -293,7 +293,7 @@
                                 android:layout_height="wrap_content"
                                 android:checked="true"
                                 android:padding="16dp"
-                                android:text="Show Overlay"
+                                android:text="显示悬浮层"
                                 android:textColor="@color/droidrun_text_secondary"
                                 android:textSize="16sp" />
                         </com.google.android.material.card.MaterialCardView>
@@ -317,7 +317,7 @@
                             android:inputType="numberSigned"
                             android:textSize="16sp"
                             android:textColor="@color/droidrun_text_primary"
-                            android:hint="Enter offset value" />
+                            android:hint="滑动设置偏移值，确保对准元素" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.card.MaterialCardView
@@ -399,7 +399,7 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Socket Server"
+                            android:text="Socket 手机启动的服务器"
                             android:textSize="20sp"
                             android:textStyle="bold"
                             android:textColor="@color/white" />
@@ -424,7 +424,7 @@
                             android:inputType="number"
                             android:textSize="16sp"
                             android:textColor="@color/droidrun_text_primary"
-                            android:hint="Port (default: 8080)" />
+                            android:hint="端口号 (default: 8080)" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.card.MaterialCardView
@@ -451,7 +451,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Status: "
+                                    android:text="状态: "
                                     android:textColor="@color/droidrun_text_secondary"
                                     android:textSize="14sp"
                                     android:textStyle="bold" />
@@ -460,7 +460,7 @@
                                     android:id="@+id/socket_server_status"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Stopped"
+                                    android:text="停止"
                                     android:textColor="@color/droidrun_text_primary"
                                     android:textSize="14sp" />
                             </LinearLayout>
@@ -468,11 +468,11 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="ADB Forward Command:"
+                                android:layout_marginBottom="4dp"
+                                android:text="开发电脑上所有发往 TCP 8080 端口的请求，都会被 ADB 转发到 Android 设备的 TCP 8080 端口上"
                                 android:textColor="@color/droidrun_text_secondary"
                                 android:textSize="12sp"
-                                android:textStyle="bold"
-                                android:layout_marginBottom="4dp" />
+                                android:textStyle="bold" />
 
                             <TextView
                                 android:id="@+id/adb_forward_command"
@@ -530,7 +530,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:padding="16dp"
-                            android:text="Logs"
+                            android:text="运行日志"
                             android:textColor="@color/white"
                             android:textSize="20sp"
                             android:textStyle="bold" />
