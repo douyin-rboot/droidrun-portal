@@ -786,7 +786,7 @@ class MainActivity : AppCompatActivity() { // 定义 MainActivity 类，继承�
                 socketServerStatus.text = status
             } else { // 如果服务实例不存在
                 // 将 socketServerStatus TextView 的文本设置为 "Service not available"。
-                socketServerStatus.text = "Service not available"
+                socketServerStatus.text = "手机未开启辅助功能服务"
             }
         } catch (e: Exception) { // 捕获任何其他可能的异常
             // 记录一条错误日志，包含异常信息。

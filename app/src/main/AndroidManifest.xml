@@ -1,29 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- XML 声明，指定文档版本为 1.0，编码为 UTF-8 -->
+
+<!-- 根元素 <manifest>，定义应用的基本信息和配置。
+     xmlns:android 指定了 Android 特定属性的命名空间。
+     xmlns:tools 指定了 Android Tools 的命名空间，用于构建时的工具属性。
+     package 指定了应用的 Java 包名，是应用的唯一标识符。
+-->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.droidrun.portal">
 
-    <!-- Permission to draw over other apps -->
+    <!-- 请求 SYSTEM_ALERT_WINDOW 权限，允许应用在其他应用之上绘制窗口（例如悬浮窗、覆盖层）。
+         这通常需要用户在设置中手动授权。
+    -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    
-    <!-- Permission for socket communication -->
+
+    <!-- 请求 INTERNET 权限，允许应用打开网络套接字，进行网络通信（如与服务器交互）。
+    -->
     <uses-permission android:name="android.permission.INTERNET" />
-    
-    <!-- Define a custom permission for secure broadcast communication -->
+
+    <!-- 定义一个自定义权限 SEND_INPUT_DATA。
+         android:name 指定权限的唯一名称。
+         android:protectionLevel="signature" 表示只有使用相同签名密钥签名的应用才能获得此权限。
+         这用于保护应用内部的广播或其他组件，防止其他应用未经授权访问。
+    -->
     <permission
         android:name="com.droidrun.portal.SEND_INPUT_DATA"
         android:protectionLevel="signature" />
-    
-    <!-- Use our custom permission -->
+
+    <!-- 请求使用上面定义的自定义权限 SEND_INPUT_DATA。
+         这使得应用自身可以访问受此权限保护的组件。
+    -->
     <uses-permission android:name="com.droidrun.portal.SEND_INPUT_DATA" />
 
+    <!-- <queries> 元素用于声明应用想要查询或与之交互的其他应用组件。
+         这在 Android 11 (API 30) 及更高版本中是必需的，以提高隐私性。
+    -->
     <queries>
+        <!-- 声明一个查询意图 (intent)。
+             这表示应用可能需要查询能够处理 "android.intent.action.MAIN"
+             并属于 "android.intent.category.LAUNCHER" 类别的 Activity。
+             通常用于查找主屏幕启动器 Activity。
+        -->
         <intent>
-            <action android:name="android.intent.action.MAIN" />
-            <category android:name="android.intent.category.LAUNCHER" />
+            <action android:name="android.intent.action.MAIN" /> <!-- 指定 Intent 的 Action -->
+            <category android:name="android.intent.category.LAUNCHER" /> <!-- 指定 Intent 的 Category -->
         </intent>
     </queries>
 
+    <!-- <application> 元素定义了应用的核心配置和组件。
+         android:allowBackup="true" 允许应用数据被备份到云端。
+         android:dataExtractionRules 指向数据提取规则的 XML 文件。
+         android:fullBackupContent 指向完整备份内容的 XML 文件。
+         android:icon 指定应用的图标资源 (@mipmap/ic_launcher)。
+         android:roundIcon 指定圆形应用图标资源 (@mipmap/ic_launcher)。
+         android:label 指定应用的用户可见名称，引用了 strings.xml 中的 app_name 字符串。
+         android:supportsRtl="true" 表明应用支持从右到左的布局方向。
+         android:theme 指定应用的默认主题样式。
+         tools:targetApi="31" 是一个 Lint 工具属性，表明这部分配置针对 API 31 (Android 12)。
+    -->
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -35,20 +70,38 @@
         android:theme="@style/Theme.Droidrun"
         tools:targetApi="31">
 
-
+        <!-- 声明一个无障碍服务 (Accessibility Service) 组件。
+             android:name 指定服务类的完整名称 (.DroidrunAccessibilityService 表示在当前包下)。
+             android:enabled="true" 表示服务默认是启用的。
+             android:exported="false" 表示服务不对外部应用公开，只能由本应用启动。
+             android:permission 指定绑定此服务所需的权限，这里是标准的无障碍服务绑定权限。
+        -->
         <service
             android:name=".DroidrunAccessibilityService"
             android:enabled="true"
             android:exported="false"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <!-- 定义服务的 Intent 过滤器，表明它可以响应 android.accessibilityservice.AccessibilityService 动作。
+                 这是系统启动无障碍服务的标准方式。
+            -->
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />
             </intent-filter>
+            <!-- 指定无障碍服务的元数据配置文件。
+                 android:name 是元数据的名称，固定为 android.accessibilityservice。
+                 android:resource 指向具体的配置文件资源 (@xml/accessibility_service_config)。
+            -->
             <meta-data
                 android:name="android.accessibilityservice"
                 android:resource="@xml/accessibility_service_config" />
         </service>
 
+        <!-- 声明一个内容提供者 (Content Provider) 组件。
+             android:name 指定提供者类的完整名称 (.DroidrunContentProvider)。
+             android:authorities 指定内容提供者的授权 URI (com.droidrun.portal)。
+             android:enabled="true" 表示提供者默认是启用的。
+             android:exported="true" 表示提供者对外部应用公开，可以被其他应用访问。
+        -->
         <provider
             android:name=".DroidrunContentProvider"
             android:authorities="com.droidrun.portal"
@@ -56,28 +109,52 @@
             android:exported="true">
         </provider>
 
+        <!-- 声明一个输入法服务 (Input Method Service / IME) 组件。
+             android:name 指定服务类的完整名称 (.DroidrunKeyboardIME)。
+             android:label 指定输入法在系统设置中的显示名称，引用了 strings.xml 中的 keyboard_name 字符串。
+             android:permission 指定绑定此服务所需的权限，这里是标准的输入法绑定权限。
+             android:exported="true" 表示服务对外部应用公开，因为系统需要能够绑定它。
+        -->
         <service
             android:name=".DroidrunKeyboardIME"
             android:label="@string/keyboard_name"
             android:permission="android.permission.BIND_INPUT_METHOD"
             android:exported="true">
+            <!-- 定义服务的 Intent 过滤器，表明它可以响应 android.view.InputMethod 动作。
+                 这是系统识别和启动输入法服务的标准方式。
+            -->
             <intent-filter>
                 <action android:name="android.view.InputMethod" />
             </intent-filter>
+            <!-- 指定输入法服务的元数据配置文件。
+                 android:name 是元数据的名称，固定为 android.view.im。
+                 android:resource 指向具体的配置文件资源 (@xml/method)。
+            -->
             <meta-data
                 android:name="android.view.im"
                 android:resource="@xml/method" />
         </service>
 
+        <!-- 声明一个 Activity 组件，即应用的主入口点。
+             android:name 指定 Activity 类的完整名称 (.MainActivity)。
+             android:exported="true" 表示 Activity 对外部应用公开，因为它需要被启动器启动。
+        -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
+            <!-- 定义 Activity 的 Intent 过滤器。
+                 <action android:name="android.intent.action.MAIN" /> 表明这是主入口点。
+                 <category android:name="android.intent.category.LAUNCHER" /> 表明它应该出现在应用启动器中。
+            -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-    </application>
+    </application> <!-- 结束 <application> 元素 -->
 
-</manifest>
+</manifest> <!-- 结束 <manifest> 根元素 -->
+
+
+
