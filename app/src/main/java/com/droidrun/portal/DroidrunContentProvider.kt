@@ -1,5 +1,6 @@
 package com.droidrun.portal
 
+import android.R
 import android.content.ContentProvider
 import android.content.ContentValues
 import android.content.UriMatcher
@@ -59,7 +60,7 @@ class DroidrunContentProvider : ContentProvider() {
         sortOrder: String?
     ): Cursor? {
         val cursor = MatrixCursor(arrayOf("result"))
-        
+
         try {
             val result = when (uriMatcher.match(uri)) {
                 A11Y_TREE -> getAccessibilityTree()
@@ -69,14 +70,14 @@ class DroidrunContentProvider : ContentProvider() {
                 PACKAGES -> getInstalledPackagesJson()
                 else -> createErrorResponse("Unknown endpoint: ${uri.path}")
             }
-            
+
             cursor.addRow(arrayOf(result))
-            
+
         } catch (e: Exception) {
             Log.e(TAG, "Query execution failed", e)
             cursor.addRow(arrayOf(createErrorResponse("Execution failed: ${e.message}")))
         }
-        
+
         return cursor
     }
 
@@ -122,14 +123,14 @@ class DroidrunContentProvider : ContentProvider() {
         }
 
         try {
-            val offset = values.getAsInteger("offset") 
+            val offset = values.getAsInteger("offset")
                 ?: return "content://$AUTHORITY/result?status=error&message=No offset provided".toUri()
 
             val accessibilityService = DroidrunAccessibilityService.getInstance()
                 ?: return "content://$AUTHORITY/result?status=error&message=Accessibility service not available".toUri()
 
             val success = accessibilityService.setOverlayOffset(offset)
-            
+
             return if (success) {
                 "content://$AUTHORITY/result?status=success&message=${Uri.encode("Overlay offset updated to $offset")}".toUri()
             } else {
@@ -151,7 +152,7 @@ class DroidrunContentProvider : ContentProvider() {
                 buildElementNodeJson(element)
             }
 
-            createSuccessResponse(treeJson.toString())
+            createSuccessResponse节点树(treeJson.toString())
         } catch (e: Exception) {
             Log.e(TAG, "Failed to get accessibility tree", e)
             createErrorResponse("Failed to get accessibility tree: ${e.message}")
@@ -204,22 +205,22 @@ class DroidrunContentProvider : ContentProvider() {
     private fun getCombinedState(): String {
         val accessibilityService = DroidrunAccessibilityService.getInstance()
             ?: return createErrorResponse("Accessibility service not available")
-        
+
         return try {
             // Get accessibility tree
             val treeJson = accessibilityService.getVisibleElements().map { element ->
                 buildElementNodeJson(element)
             }
-            
+
             // Get phone state
             val phoneStateJson = buildPhoneStateJson(accessibilityService.getPhoneState())
-            
+
             // Combine both in a single response
             val combinedState = JSONObject().apply {
                 put("a11y_tree", org.json.JSONArray(treeJson))
                 put("phone_state", phoneStateJson)
             }
-            
+
             createSuccessResponse(combinedState.toString())
         } catch (e: Exception) {
             Log.e(TAG, "Failed to get combined state", e)
@@ -260,11 +261,14 @@ class DroidrunContentProvider : ContentProvider() {
 
             // Set the text using ACTION_SET_TEXT
             val arguments = Bundle().apply {
-                putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, finalText)
+                putCharSequence(
+                    AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE,
+                    finalText
+                )
             }
             val result = focusedNode.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments)
             focusedNode.recycle()
-            
+
             if (result) {
                 val mode = if (append) "appended" else "set"
                 "success: Text $mode - '$text'"
@@ -280,7 +284,7 @@ class DroidrunContentProvider : ContentProvider() {
     private fun performKeyboardInputBase64(values: ContentValues): String {
         val base64Text = values.getAsString("base64_text") ?: return "error: no text provided"
         val append = values.getAsBoolean("append") ?: false
-    
+
         return if (DroidrunKeyboardIME.getInstance() != null) {
             val ok = DroidrunKeyboardIME.getInstance()!!.inputB64Text(base64Text, append)
             if (ok) "success: input done (append=$append)" else "error: input failed"
@@ -288,7 +292,7 @@ class DroidrunContentProvider : ContentProvider() {
             "error: IME not active"
         }
     }
-    
+
 
     private fun performKeyboardClear(): String {
         val keyboardIME = DroidrunKeyboardIME.getInstance()
@@ -323,21 +327,22 @@ class DroidrunContentProvider : ContentProvider() {
         }
     }
 
-    
+
     private fun getInstalledPackagesJson(): String {
         val pm = context?.packageManager ?: return createErrorResponse("PackageManager unavailable")
-    
+
         return try {
             val mainIntent = Intent(Intent.ACTION_MAIN, null).apply {
                 addCategory(Intent.CATEGORY_LAUNCHER)
             }
-            
-            val resolvedApps: List<ResolveInfo> = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                pm.queryIntentActivities(mainIntent, PackageManager.ResolveInfoFlags.of(0L))
-            } else {
-                @Suppress("DEPRECATION")
-                pm.queryIntentActivities(mainIntent, 0)
-            }
+
+            val resolvedApps: List<ResolveInfo> =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    pm.queryIntentActivities(mainIntent, PackageManager.ResolveInfoFlags.of(0L))
+                } else {
+                    @Suppress("DEPRECATION")
+                    pm.queryIntentActivities(mainIntent, 0)
+                }
 
             val arr = JSONArray()
 
@@ -345,7 +350,7 @@ class DroidrunContentProvider : ContentProvider() {
                 val pkgInfo = try {
                     pm.getPackageInfo(resolveInfo.activityInfo.packageName, 0)
                 } catch (e: PackageManager.NameNotFoundException) {
-                    continue 
+                    continue
                 }
 
                 val appInfo = resolveInfo.activityInfo.applicationInfo
@@ -368,14 +373,14 @@ class DroidrunContentProvider : ContentProvider() {
 
                 arr.put(obj)
             }
-    
+
             val root = JSONObject()
             root.put("status", "success")
             root.put("count", arr.length())
             root.put("packages", arr)
-    
+
             root.toString()
-    
+
         } catch (e: Exception) {
             Log.e(TAG, "Failed to enumerate launchable apps", e)
             createErrorResponse("Failed to enumerate launchable apps: ${e.message}")
@@ -389,6 +394,24 @@ class DroidrunContentProvider : ContentProvider() {
         }.toString()
     }
 
+    //修复返回的json字符串格式错误问题 ,只在返回布局节点树的时候调用。
+    private fun createSuccessResponse节点树(data: String): String {
+        //修复返回的json字符串格式错误问题
+        val jsonObject = JSONObject()
+        try {
+            // 将 data 字符串转换为 JSONArray
+            val jsonArray = JSONArray(data)
+            jsonObject.put("status", "success")
+            jsonObject.put("message", jsonArray)
+        } catch (e: JSONException) {
+            // 如果 data 不是有效的 JSON 数组，则将其作为普通字符串处理
+            jsonObject.put("status", "success")
+            jsonObject.put("message", data)
+        }
+        return jsonObject.toString(2) // 这个设置可以确保在控制台返回json格式是正确的， 很关建
+    }
+
+
     private fun createErrorResponse(error: String): String {
         return JSONObject().apply {
             put("status", "error")
@@ -397,6 +420,12 @@ class DroidrunContentProvider : ContentProvider() {
     }
 
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<String>?): Int = 0
-    override fun update(uri: Uri, values: ContentValues?, selection: String?, selectionArgs: Array<String>?): Int = 0
+    override fun update(
+        uri: Uri,
+        values: ContentValues?,
+        selection: String?,
+        selectionArgs: Array<String>?
+    ): Int = 0
+
     override fun getType(uri: Uri): String? = null
 }
