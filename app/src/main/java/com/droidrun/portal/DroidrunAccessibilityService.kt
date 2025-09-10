@@ -478,7 +478,7 @@ class DroidrunAccessibilityService : AccessibilityService(), ConfigManager.Confi
                 val childElement = findAllVisibleElements(childNode, windowLayer, currentElement, indexCounter)
                 // 子元素已在上面的 parent?.addChild() 调用中添加到 currentElement
             }
-
+//            Log.i(TAG, "没个节点的信息: $currentElement")
             return currentElement
 
         } catch (e: Exception) {
